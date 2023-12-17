@@ -1,0 +1,45 @@
+version: '2'
+services:
+  ui:
+    build: ./frontend
+    ports:
+      - '3000:3000'
+    depends_on:
+      - api
+    networks:
+      - app-network
+
+  # Node.js (Express) backend service
+  backend:
+    build:
+      context: ./backend
+    ports:
+      - "5000:5000"
+    environment:
+      - MONGODB_URI=mongodb://mongodb:27017/reactmongoapp
+    depends_on:
+      - mongodb
+    networks:
+      - app-network    
+
+  api:
+    build: ./
+    ports:
+      - '8080:8080'
+    depends_on:
+      - mongo
+    networks:
+      - app-network  
+  mongo:
+    image: mongo
+    ports:
+      - '27017:27017'
+    networks:
+      - app-network  
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  mongo-data:      
